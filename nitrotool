@@ -64,7 +64,7 @@ def genparser(parser):
 	parser.add_argument("--so-pin", metavar = "so-pin", type = str, required = True, help = "Specifies the current SO-PIN. Mandatory argument.")
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
-mc.register("format", "Reinitialize the smartcard completely (removing all keys and certificates) and set SO-PIN and PIN back to their original values", genparser, action = ActionFormat)
+mc.register("format", "Reinitialize the smartcard completely (removing all keys and certificates) and set SO-PIN and PIN back to their factory default", genparser, action = ActionFormat)
 
 def genparser(parser):
 	parser.add_argument("--old", metavar = "pin/so-pin", type = str, help = "Specifies the old PIN or SO-PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
