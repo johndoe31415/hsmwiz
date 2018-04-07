@@ -1,0 +1,90 @@
+#!/usr/bin/python3
+#	nitrotool - Frontend for NitroKey USB HSM
+#	Copyright (C) 2018-2018 Johannes Bauer
+#
+#	This file is part of nitrotool.
+#
+#	nitrotool is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; this program is ONLY licensed under
+#	version 3 of the License, later versions are explicitly excluded.
+#
+#	nitrotool is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+#	Johannes Bauer <JohannesBauer@gmx.de>
+
+import sys
+from MultiCommand import MultiCommand
+from ActionIdentify import ActionIdentify
+from ActionVerifyPIN import ActionVerifyPIN
+from ActionInit import ActionInit
+from ActionExplore import ActionExplore
+from ActionUnblock import ActionUnblock
+from ActionKeyGen import ActionKeyGen
+from ActionGetPublicKey import ActionGetPublicKey
+from ActionRemoveKey import ActionRemoveKey
+
+_default = {
+	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu",
+}
+
+mc = MultiCommand()
+def genparser(parser):
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("identify", "Check if a NitroKey is connected and list all contents", genparser, action = ActionIdentify)
+
+def genparser(parser):
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("verifypin", "Try to login a NitroKey by entering a PIN", genparser, action = ActionVerifyPIN)
+
+def genparser(parser):
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("init", "Initialize the smartcard for the first time, set default SO-PIN and PIN", genparser, action = ActionInit)
+
+def genparser(parser):
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("explore", "Explore the smartcard structure interactively", genparser, action = ActionExplore)
+
+def genparser(parser):
+	parser.add_argument("--so-pin", metavar = "so-pin", type = str, help = "Specifies the SO-PIN that should be used for authorizing unblocking, in ASCII format. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN that should be set after unblocking, in ASCII format. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("unblock", "Unblock the transponder's blocked PIN using the SO-PIN", genparser, action = ActionUnblock)
+
+def genparser(parser):
+	parser.add_argument("--id", metavar = "key_id", type = int, default = 1, help = "Specifies the key ID to use for generating the new key. Must be an integer and defaults to %(default)d.")
+	parser.add_argument("--label", metavar = "key_label", type = str, help = "Specifies the key label to use for generating the new key.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+	parser.add_argument("keyspec", metavar = "keyspec", type = str, help = "Key specification string to generate. Can be either 'rsa:BITLENGTH' or 'EC:CURVENAME'. Examples are 'rsa:1024', 'EC:brainpool256r1' or 'EC:prime256v1'.")
+mc.register("keygen", "Create a new private keypair on the smartcard", genparser, action = ActionKeyGen, aliases = [ "genkey" ])
+
+def genparser(parser):
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument("--id", metavar = "key_id", type = int, help = "Specifies the key ID to fetch.")
+	group.add_argument("--label", metavar = "key_label", type = str, help = "Specifies the key label to fetch.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("getkey", "Fetch a public key from the smartcard", genparser, action = ActionGetPublicKey, aliases = [ "getpubkey" ])
+
+def genparser(parser):
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument("--id", metavar = "key_id", type = int, help = "Specifies the key ID to remove.")
+	group.add_argument("--label", metavar = "key_label", type = str, help = "Specifies the key label to remove.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("removekey", "Remove a keypair from the smartcard", genparser, action = ActionRemoveKey, aliases = [ "delkey", "deletekey" ])
+
+mc.run(sys.argv[1:])
