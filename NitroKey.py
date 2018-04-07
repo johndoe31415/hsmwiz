@@ -147,3 +147,55 @@ class NitroKey(object):
 			cmd += [ "--label", key_label ]
 		cmd += [ "--delete-object", "--type", "privkey" ]
 		self._call(cmd)
+
+	def check_engine(self):
+		cmd = [ "openssl", "engine" ]
+		cmd += [ "-tt" ]
+		cmd += [ "-pre", "SO_PATH:%s" % (self._shared_obj("libpkcs11.so")) ]
+		cmd += [ "-pre", "ID:pkcs11" ]
+		cmd += [ "-pre", "LIST_ADD:1" ]
+		cmd += [ "-pre", "LOAD" ]
+		cmd += [ "-pre", "MODULE_PATH:%s" % (self._shared_obj("opensc-pkcs11.so")) ]
+		cmd += [ "dynamic" ]
+		self._call(cmd)
+
+	def _execute_openssl_engine(self, user_openssl_cmd):
+		openssl_cmds = [ ]
+		openssl_cmd = [ "engine" ]
+		openssl_cmd += [ "-tt" ]
+		openssl_cmd += [ "-pre", "SO_PATH:%s" % (self._shared_obj("libpkcs11.so")) ]
+		openssl_cmd += [ "-pre", "ID:pkcs11" ]
+		openssl_cmd += [ "-pre", "LIST_ADD:1" ]
+		openssl_cmd += [ "-pre", "LOAD" ]
+		if self.__pin is not None:
+			openssl_cmd += [ "-pre", "PIN:%s" % (self.__pin) ]
+		openssl_cmd += [ "-pre", "MODULE_PATH:%s" % (self._shared_obj("opensc-pkcs11.so")) ]
+		openssl_cmd += [ "dynamic" ]
+		openssl_cmds.append(openssl_cmd)
+		openssl_cmds.append(user_openssl_cmd)
+
+		openssl_cmds_str = "\n".join(CmdTools.cmdline(cmd) for cmd in openssl_cmds) + "\n"
+		openssl_cmds = openssl_cmds_str.encode()
+
+		output = subprocess.check_output([ "openssl" ], input = openssl_cmds)
+		print(output)
+
+	def gencsr(self, key_id, subject = "/CN=NitroKey Example"):
+		openssl_cmd = [ "req", "-new", "-x509" ]
+		openssl_cmd += [ "-keyform", "engine", "-engine", "pkcs11" ]
+		openssl_cmd += [ "-key", "0:%d" % (key_id) ]
+		openssl_cmd += [ "-subj", subject ]
+		self._execute_openssl_engine(openssl_cmd)
+
+#		cmd += [ "-key", "0:%s" % (str(key_id)) ]
+		#-pre SO_PATH:/usr/local/lib/engines/engine_pkcs11.so -pre ID:pkcs11 -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:/usr/local/lib/pkcs11/opensc-pkcs11.so
+#		cmd = [ "openssl", "req", "-new", "-keyform", "engine", "-engine", "dynamic" ]
+
+#		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
+#		if self.__pin is not None:
+#			cmd += [ "--pin", self.__pin ]
+#		if key_id is not None:
+#			cmd += [ "--id", str(key_id) ]
+#		if key_label is not None:
+#			cmd += [ "--label", key_label ]
+#		cmd += [ "--delete-object", "--type", "privkey" ]

@@ -23,15 +23,17 @@ import sys
 from MultiCommand import MultiCommand
 from ActionIdentify import ActionIdentify
 from ActionVerifyPIN import ActionVerifyPIN
+from ActionCheckEngine import ActionCheckEngine
 from ActionInit import ActionInit
 from ActionExplore import ActionExplore
 from ActionUnblock import ActionUnblock
 from ActionKeyGen import ActionKeyGen
 from ActionGetPublicKey import ActionGetPublicKey
 from ActionRemoveKey import ActionRemoveKey
+from ActionGenCSR import ActionGenCSR
 
 _default = {
-	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu",
+	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/openssl-1.0.2/engines",
 }
 
 mc = MultiCommand()
@@ -44,6 +46,11 @@ def genparser(parser):
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
 mc.register("verifypin", "Try to login a NitroKey by entering a PIN", genparser, action = ActionVerifyPIN)
+
+def genparser(parser):
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("checkengine", "Check if the OpenSSL engine driver works", genparser, action = ActionCheckEngine)
 
 def genparser(parser):
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
@@ -86,5 +93,12 @@ def genparser(parser):
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
 mc.register("removekey", "Remove a keypair from the smartcard", genparser, action = ActionRemoveKey, aliases = [ "delkey", "deletekey" ])
+
+def genparser(parser):
+	parser.add_argument("--id", metavar = "key_id", type = int, default = 1, help = "Specifies the key ID of which to include the public key into the CSR. Defaults to %(default)d.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("gencsr", "Generate a certificate signing request from a HSM-contained private key", genparser, action = ActionGenCSR)
 
 mc.run(sys.argv[1:])
