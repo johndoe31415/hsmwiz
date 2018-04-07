@@ -174,28 +174,38 @@ class NitroKey(object):
 		openssl_cmds.append(openssl_cmd)
 		openssl_cmds.append(user_openssl_cmd)
 
-		openssl_cmds_str = "\n".join(CmdTools.cmdline(cmd) for cmd in openssl_cmds) + "\n"
-		openssl_cmds = openssl_cmds_str.encode()
+		openssl_cmds_str = "\n".join(CmdTools.cmdline(cmd) for cmd in openssl_cmds)
+		if self.__verbose:
+			print("OpenSSL command lines:")
+			print(openssl_cmds_str)
+		openssl_cmds = openssl_cmds_str.encode() + b"\n"
 
 		output = subprocess.check_output([ "openssl" ], input = openssl_cmds)
-		print(output)
+		return output
+
+	def _print_csr(self, pem_bytes):
+		output = subprocess.check_output([ "openssl", "req", "-text" ], input = pem_bytes)
+		print(output.decode().rstrip("\r\n"))
+
+	def _gencsr_crt(self, key_id, subject, validity_days = None, hashfnc = None):
+		with tempfile.NamedTemporaryFile(prefix = "csr_crt_", suffix = ".pem") as temp_csr_crt:
+			openssl_cmd = [ "req", "-new" ]
+			openssl_cmd += [ "-keyform", "engine", "-engine", "pkcs11" ]
+			openssl_cmd += [ "-key", "0:%d" % (key_id) ]
+			if validity_days is not None:
+				openssl_cmd += [ "-x509", "-days", str(validity_days) ]
+			if hashfnc is not None:
+				openssl_cmd += [ "-%s" % (hashfnc) ]
+			openssl_cmd += [ "-subj", subject ]
+			openssl_cmd += [ "-out", temp_csr_crt.name ]
+			if self.__verbose:
+				openssl_cmd += [ "-text" ]
+			output = self._execute_openssl_engine(openssl_cmd)
+			with open(temp_csr_crt.name) as f:
+				print(f.read().rstrip("\r\n"))
 
 	def gencsr(self, key_id, subject = "/CN=NitroKey Example"):
-		openssl_cmd = [ "req", "-new", "-x509" ]
-		openssl_cmd += [ "-keyform", "engine", "-engine", "pkcs11" ]
-		openssl_cmd += [ "-key", "0:%d" % (key_id) ]
-		openssl_cmd += [ "-subj", subject ]
-		self._execute_openssl_engine(openssl_cmd)
+		return self._gencsr_crt(key_id = key_id, subject = subject)
 
-#		cmd += [ "-key", "0:%s" % (str(key_id)) ]
-		#-pre SO_PATH:/usr/local/lib/engines/engine_pkcs11.so -pre ID:pkcs11 -pre LIST_ADD:1 -pre LOAD -pre MODULE_PATH:/usr/local/lib/pkcs11/opensc-pkcs11.so
-#		cmd = [ "openssl", "req", "-new", "-keyform", "engine", "-engine", "dynamic" ]
-
-#		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
-#		if self.__pin is not None:
-#			cmd += [ "--pin", self.__pin ]
-#		if key_id is not None:
-#			cmd += [ "--id", str(key_id) ]
-#		if key_label is not None:
-#			cmd += [ "--label", key_label ]
-#		cmd += [ "--delete-object", "--type", "privkey" ]
+	def gencrt(self, key_id, subject = "/CN=NitroKey Example", validity_days = 365, hashfnc = "sha256"):
+		return self._gencsr_crt(key_id = key_id, subject = subject, validity_days = validity_days, hashfnc = hashfnc)

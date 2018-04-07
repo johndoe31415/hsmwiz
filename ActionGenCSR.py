@@ -26,4 +26,7 @@ class ActionGenCSR(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
 		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.gencsr(key_id = self.args.id)
+		if cmdname == "gencsr":
+			nitrokey.gencsr(key_id = self.args.id, subject = self.args.subject)
+		else:
+			nitrokey.gencrt(key_id = self.args.id, subject = self.args.subject, validity_days = self.args.validity_days, hashfnc = self.args.hashfnc)

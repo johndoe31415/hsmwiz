@@ -24,8 +24,12 @@ $ ./nitrotool
 Syntax: ./nitrotool [command] [options]
 
 Available commands:
+
+Options vary from command to command. To receive further info, type
+    ./nitrotool [command] --help
     identify           Check if a NitroKey is connected and list all contents
     verifypin          Try to login a NitroKey by entering a PIN
+    checkengine        Check if the OpenSSL engine driver works
     init               Initialize the smartcard for the first time, set default
                        SO-PIN and PIN
     explore            Explore the smartcard structure interactively
@@ -33,6 +37,10 @@ Available commands:
     keygen             Create a new private keypair on the smartcard
     getkey             Fetch a public key from the smartcard
     removekey          Remove a keypair from the smartcard
+    gencsr             Generate a certificate signing request from a HSM-
+                       contained private key
+    gencrt             Generate a self-signed certificate from a HSM-contained
+                       private key
 
 Options vary from command to command. To receive further info, type
     ./nitrotool [command] --help
@@ -171,6 +179,20 @@ Please enter User PIN:
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFtI28QkikzJmYja3rw1G1UfLsSUV
 HhpqZX8rK4SVuSB9QINq4/J2tVqJiThfRvFgBmd5ObWAtmY2CG3D8JWk4g==
 -----END PUBLIC KEY-----
+```
+
+Or create a CSR from a HSM key:
+
+```
+$ ./nitrotool gencsr --pin 648219
+engine "pkcs11" set.
+-----BEGIN CERTIFICATE REQUEST-----
+MIHVMH0CAQAwGzEZMBcGA1UEAwwQTml0cm9LZXkgRXhhbXBsZTBZMBMGByqGSM49
+AgEGCCqGSM49AwEHA0IABBbSNvEJIpMyZmI2t68NRtVHy7ElFR4aamV/KyuElbkg
+fUCDauPydrVaiYk4X0bxYAZneTm1gLZmNghtw/CVpOKgADAKBggqhkjOPQQDAgNI
+ADBFAiBybom3wRlgBDmNsm34rcOol62sgi0BHbz2PqJvwBshpgIhALdHw+PkEFeJ
+pQD+3QcftVe9CZJu0uW25MEcg3S/yKOG
+-----END CERTIFICATE REQUEST-----
 ```
 
 ## Dependencies

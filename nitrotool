@@ -95,10 +95,21 @@ def genparser(parser):
 mc.register("removekey", "Remove a keypair from the smartcard", genparser, action = ActionRemoveKey, aliases = [ "delkey", "deletekey" ])
 
 def genparser(parser):
-	parser.add_argument("--id", metavar = "key_id", type = int, default = 1, help = "Specifies the key ID of which to include the public key into the CSR. Defaults to %(default)d.")
+	parser.add_argument("-s", "--subject", metavar = "subject", type = str, default = "/CN=NitroKey Example", help = "Specifies the CSR subject. Defaults to \"%(default)s\".")
+	parser.add_argument("-i", "--id", metavar = "key_id", type = int, default = 1, help = "Specifies the key ID of which to include the public key into the CSR. Defaults to %(default)d.")
 	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
 mc.register("gencsr", "Generate a certificate signing request from a HSM-contained private key", genparser, action = ActionGenCSR)
+
+def genparser(parser):
+	parser.add_argument("-s", "--subject", metavar = "subject", type = str, default = "/CN=NitroKey Example", help = "Specifies the certificate subject. Defaults to \"%(default)s\".")
+	parser.add_argument("--validity-days", metavar = "days", type = int, default = 365, help = "Time in days that the self-signed certificate is valid for. Defaults to %(default)d days.")
+	parser.add_argument("--hashfnc", metavar = "hashfnc", type = str, default = "sha256", help = "Hash function that is used during signing. Defaults to %(default)s.")
+	parser.add_argument("-i", "--id", metavar = "key_id", type = int, default = 1, help = "Specifies the key ID of which to include the public key into the CSR. Defaults to %(default)d.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("gencrt", "Generate a self-signed certificate from a HSM-contained private key", genparser, action = ActionGenCSR)
 
 mc.run(sys.argv[1:])
