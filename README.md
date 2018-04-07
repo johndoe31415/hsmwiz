@@ -10,8 +10,14 @@ sometimes not very user friendly (e.g., public keys are exported as binary DER
 blobs instead of PEM files). So I wrote this little frontend to encapsulate
 common tasks a bit.
 
+## Hardware
+The hardware I'm working with is the [NitroKey HSM](https://shop.nitrokey.com),
+which is a quite affordable smart-card based USB HSM. I'm in no way affiliated
+with them whatsoever, just think they have a pretty cool product.
+
 ## Usage
-All commands have comprehensive help pages. You can get a summary of available commands by typing:
+All commands have comprehensive help pages. You can get a summary of available
+commands by typing:
 
 ```
 $ ./nitrotool
