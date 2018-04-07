@@ -61,8 +61,10 @@ class NitroKey(object):
 
 	def _call(self, cmd):
 		if self.__verbose:
-			print(CmdTools.cmdline(cmd))
+			print("Now executing: %s" % (CmdTools.cmdline(cmd)))
 		subprocess.check_call(cmd)
+		if self.__verbose:
+			print()
 
 	@property
 	def initialized(self):
@@ -115,19 +117,28 @@ class NitroKey(object):
 			cmd += [ "--label", key_label ]
 		self._call(cmd)
 
-	def _print_pubkey_derfile(self, derfile_name):
+	def _print_pubkey_derfile(self, derfile_name, silent = False):
 		for (openssl_cmd, name) in [ ("rsa", "RSA"), ("ec", "ECC") ]:
 			try:
 				pem_pubkey = subprocess.check_output([ "openssl", openssl_cmd, "-pubin", "-inform", "der", "-in", derfile_name ], stderr = subprocess.DEVNULL)
-				print("# %s key:" % (name))
-				print(pem_pubkey.decode().rstrip("\r\n"))
-				return
+				if not silent:
+					print("# %s key:" % (name))
+					print(pem_pubkey.decode().rstrip("\r\n"))
+				return pem_pubkey
 			except subprocess.CalledProcessError:
 				pass
 		raise Exception("Could not successfully decode DER-encoded public key in '%s'." % (derfile_name))
 
-	def getpubkey(self, key_id, key_label = None):
+	def _print_sshkey_derfile(self, derfile_name):
+		pubkey_pem = self._print_pubkey_derfile(derfile_name, silent = True)
+		with tempfile.NamedTemporaryFile("wb", prefix = "pubkey_", suffix = ".pem") as f:
+			f.write(pubkey_pem)
+			f.flush()
+			self._call([ "ssh-keygen", "-i", "-m", "PKCS8", "-f", f.name ])
+
+	def getpubkey(self, key_id, key_label = None, key_format = None):
 		assert((key_id is None) ^ (key_label is None))
+		assert(key_format in [ "pem", "ssh" ])
 		with tempfile.NamedTemporaryFile(prefix = "pubkey_", suffix = ".der") as pubkey_derfile:
 			cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
 			if self.__pin is not None:
@@ -139,7 +150,12 @@ class NitroKey(object):
 			cmd += [ "--read-object", "--type", "pubkey" ]
 			cmd += [ "--output-file", pubkey_derfile.name ]
 			self._call(cmd)
-			self._print_pubkey_derfile(pubkey_derfile.name)
+			if key_format == "pem":
+				self._print_pubkey_derfile(pubkey_derfile.name)
+			elif key_format == "ssh":
+				self._print_sshkey_derfile(pubkey_derfile.name)
+			else:
+				raise Exception(NotImplemented)
 
 	def removekey(self, key_id, key_label = None):
 		assert((key_id is None) ^ (key_label is None))

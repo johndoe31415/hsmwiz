@@ -29,4 +29,4 @@ class ActionGetPublicKey(BaseAction):
 			print("Error: Must specify either a label or key ID to fetch from smartcard.", file = sys.stderr)
 			sys.exit(1)
 		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.getpubkey(key_id = self.args.id, key_label = self.args.label)
+		nitrokey.getpubkey(key_id = self.args.id, key_label = self.args.label, key_format = self.args.key_format)
