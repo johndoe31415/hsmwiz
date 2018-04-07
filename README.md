@@ -24,14 +24,15 @@ $ ./nitrotool
 Syntax: ./nitrotool [command] [options]
 
 Available commands:
-
-Options vary from command to command. To receive further info, type
-    ./nitrotool [command] --help
     identify           Check if a NitroKey is connected and list all contents
-    verifypin          Try to login a NitroKey by entering a PIN
+    verifypin          Try to login a NitroKey by entering a PIN or SO-PIN
     checkengine        Check if the OpenSSL engine driver works
     init               Initialize the smartcard for the first time, set default
                        SO-PIN and PIN
+    format             Reinitialize the smartcard completely (removing all keys
+                       and certificates) and set SO-PIN and PIN back to their
+                       original values
+    changepin          Change device PIN or SO-PIN
     explore            Explore the smartcard structure interactively
     unblock            Unblock the transponder's blocked PIN using the SO-PIN
     keygen             Create a new private keypair on the smartcard
@@ -41,6 +42,7 @@ Options vary from command to command. To receive further info, type
                        contained private key
     gencrt             Generate a self-signed certificate from a HSM-contained
                        private key
+    putcrt             Put a certificate on the smartcard
 
 Options vary from command to command. To receive further info, type
     ./nitrotool [command] --help

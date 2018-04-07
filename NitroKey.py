@@ -76,10 +76,15 @@ class NitroKey(object):
 	def list(self):
 		self._call([ "pkcs15-tool", "--dump" ])
 
-	def login(self):
+	def login(self, with_sopin = False):
 		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login", "--list-objects" ]
-		if self.__pin is not None:
-			cmd += [ "--pin", self.__pin ]
+		if with_sopin:
+			cmd += [ "--login-type", "so" ]
+			if self.__sopin is not None:
+				cmd += [ "--so-pin", self.__sopin ]
+		else:
+			if self.__pin is not None:
+				cmd += [ "--pin", self.__pin ]
 		try:
 			self._call(cmd)
 			return True
@@ -224,3 +229,31 @@ class NitroKey(object):
 				cmd += [ "--label", cert_label ]
 			cmd += [ "--write-object", crt_tempfile.name, "--type", "cert" ]
 			self._call(cmd)
+
+	def change_pin(self, new_value):
+		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
+#		, "--login-type", "so" ]
+#		if self.__sopin is not None:
+#			cmd += [ "--so-pin", self.__sopin ]
+		if self.__pin is not None:
+			cmd += [ "--pin", self.__pin ]
+		cmd += [ "--change-pin", "--new-pin", str(new_value) ]
+		self._call(cmd)
+
+	def change_sopin(self, new_value):
+		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
+		cmd += [ "--login-type", "so" ]
+		if self.__sopin is not None:
+			cmd += [ "--so-pin", self.__sopin ]
+		cmd += [ "--change-pin", "--new-pin", str(new_value) ]
+		self._call(cmd)
+
+	def format(self):
+		assert(self.__sopin is not None)
+		if not self.login(with_sopin = True):
+			raise Exception("Login with SO-PIN failed. Cannot format smartcard.")
+		cmd = [ "sc-hsm-tool", "--initialize", "--so-pin", self.__sopin, "--pin", self._INITIAL_PIN ]
+		self._call(cmd)
+		if self.__sopin != self._INITIAL_SOPIN:
+			self.change_sopin(self._INITIAL_SOPIN)
+		print("Smartcard successfully formatted. New SO-PIN: %s and PIN: %s" % (self._INITIAL_SOPIN, self._INITIAL_PIN))

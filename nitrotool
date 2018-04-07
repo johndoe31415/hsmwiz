@@ -25,6 +25,8 @@ from ActionIdentify import ActionIdentify
 from ActionVerifyPIN import ActionVerifyPIN
 from ActionCheckEngine import ActionCheckEngine
 from ActionInit import ActionInit
+from ActionFormat import ActionFormat
+from ActionChangePIN import ActionChangePIN
 from ActionExplore import ActionExplore
 from ActionUnblock import ActionUnblock
 from ActionKeyGen import ActionKeyGen
@@ -43,10 +45,11 @@ def genparser(parser):
 mc.register("identify", "Check if a NitroKey is connected and list all contents", genparser, action = ActionIdentify)
 
 def genparser(parser):
-	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN/SO-PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--verify-sopin", action = "store_true", help = "Instead of specifying/verifying the PIN, verify the SO-PIN instead.")
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
-mc.register("verifypin", "Try to login a NitroKey by entering a PIN", genparser, action = ActionVerifyPIN)
+mc.register("verifypin", "Try to login a NitroKey by entering a PIN or SO-PIN", genparser, action = ActionVerifyPIN)
 
 def genparser(parser):
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
@@ -56,6 +59,22 @@ mc.register("checkengine", "Check if the OpenSSL engine driver works", genparser
 def genparser(parser):
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
 mc.register("init", "Initialize the smartcard for the first time, set default SO-PIN and PIN", genparser, action = ActionInit)
+
+def genparser(parser):
+	parser.add_argument("--so-pin", metavar = "so-pin", type = str, required = True, help = "Specifies the current SO-PIN. Mandatory argument.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("format", "Reinitialize the smartcard completely (removing all keys and certificates) and set SO-PIN and PIN back to their original values", genparser, action = ActionFormat)
+
+def genparser(parser):
+	parser.add_argument("--old", metavar = "pin/so-pin", type = str, help = "Specifies the old PIN or SO-PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	group = parser.add_mutually_exclusive_group()
+	group.add_argument("--new", metavar = "pin/so-pin", type = str, help = "Specifies the new PIN or SO-PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	group.add_argument("--randomize-new", action = "store_true", help = "Randomize the new PIN or SO-PIN and print the new value on the command line.")
+	parser.add_argument("--affect-so-pin", action = "store_true", help = "By default, the PIN is changed. When this option is given, the SO-PIN is changed instead.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+mc.register("changepin", "Change device PIN or SO-PIN", genparser, action = ActionChangePIN)
 
 def genparser(parser):
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")

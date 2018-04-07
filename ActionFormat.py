@@ -22,19 +22,8 @@ import sys
 from BaseAction import BaseAction
 from NitroKey import NitroKey
 
-class ActionVerifyPIN(BaseAction):
+class ActionFormat(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-
-		if not args.verify_sopin:
-			nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-			if nitrokey.login():
-				print("PIN correct.", file = sys.stderr)
-			else:
-				print("PIN was WRONG!", file = sys.stderr)
-		else:
-			nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, sopin = self.args.pin)
-			if nitrokey.login(with_sopin = True):
-				print("SO-PIN correct.", file = sys.stderr)
-			else:
-				print("SO-PIN was WRONG!", file = sys.stderr)
+		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, sopin = self.args.so_pin)
+		nitrokey.format()
