@@ -77,7 +77,7 @@ optional arguments:
   --help             Show this help page.
 ```
 
-## Example
+## Example: General Stuff
 You can first query a transponder:
 
 ```
@@ -97,7 +97,7 @@ PKCS#15 Card [SmartCard-HSM]:
 	Version        : 0
 	Serial number  : DENK#######
 	Manufacturer ID: www.CardContact.de
-	Flags          : 
+	Flags          :
 PIN [UserPIN]
 	Object Flags   : [0x3], private, modifiable
 	Auth ID        : 02
@@ -119,7 +119,7 @@ PIN [SOPIN]
 	Reference      : 136 (0x88)
 	Type           : bcd
 	Path           : e82b0601040181c31f0201::
-	Tries left     : 15 
+	Tries left     : 15
 ```
 
 Then, you could use it to generate a new private key:
@@ -128,7 +128,7 @@ Then, you could use it to generate a new private key:
 $ ./nitrotool genkey EC:prime256v1 --label fookey
 Using slot 0 with a present token (0x0)
 Logging in to "UserPIN (SmartCard-HSM)".
-Please enter User PIN: 
+Please enter User PIN:
 Key pair generated:
 Private Key Object; EC
   label:      fookey
@@ -175,7 +175,7 @@ Grab the public key:
 $ ./nitrotool getpubkey --label fookey
 Using slot 0 with a present token (0x0)
 Logging in to "UserPIN (SmartCard-HSM)".
-Please enter User PIN: 
+Please enter User PIN:
 # ECC key:
 -----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFtI28QkikzJmYja3rw1G1UfLsSUV
@@ -196,6 +196,49 @@ ADBFAiBybom3wRlgBDmNsm34rcOol62sgi0BHbz2PqJvwBshpgIhALdHw+PkEFeJ
 pQD+3QcftVe9CZJu0uW25MEcg3S/yKOG
 -----END CERTIFICATE REQUEST-----
 ```
+
+## Example: Setting up a NitroKey HSM for SSH authentication
+Generate an RSA key. Unfortunately, currently [OpenSSH still does not support
+ECDSA with PKCS#11](https://bugzilla.mindrot.org/show_bug.cgi?id=2474). This is
+done simply by doing:
+
+```
+$ ./nitrotool genkey --id 1 --label my-ssh-key --pin 648219 rsa:2048
+Using slot 0 with a present token (0x0)
+Key pair generated:
+Private Key Object; RSA
+  label:      my-ssh-key
+  ID:         01
+  Usage:      decrypt, sign, unwrap
+Public Key Object; RSA 2048 bits
+  label:      my-ssh-key
+  ID:         01
+  Usage:      encrypt, verify, wrap
+```
+
+Then, extract the public key you just created from the NitroKey in SSH format:
+
+```
+$ ./nitrotool getkey --id 1 --key-format ssh --pin 648219
+Using slot 0 with a present token (0x0)
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCV6Fqr80gKq+wV+MA0dMltHTuwMwyVLBvLPdtVYdsw4S2YAjfTDnLATFHOhId/fFDMbSv9qH3YI/F8ryXM8MY53J1bd3Vd5iPbnG8/Azk0F5IUw9u/bhL6/39nFWJqSKww68pe4BFtCHMfPLchT9A6lMk0QOe8rU8VNkgcZsMfQ+iDzd5OmEC7JdlJSY7kCSPHkF/SoJLk5BuftV3kVCm2VAhkMgObbNnw3xHoiL0yv/JZyBly+ssDog72EkNvbYL9bvVMk2ZqYhLESPTwMnh7x1DyznlIC2R3XuqKkrQ5ztMblCAli5S7s1yYSKj4jCYzyIZf2nfPoCTTiqNs7Eyd
+```
+
+Add that last line to the `~/.ssh/authorized_keys` file on the user/host you
+want to authenticate with (i.e., the one with the OpenSSH server).
+
+When you want to login to that server, do:
+
+```
+$ ssh -o "PKCS11Provider opensc-pkcs11.so" joe@reliant
+Enter PIN for 'UserPIN (SmartCard-HSM)':
+Welcome to Ubuntu 17.10 (GNU/Linux 4.13.0 x86_64)
+Last login: Sat Apr  7 18:40:52 2018 from 127.0.0.1
+reliant joe [~]:
+```
+
+You'll notice that you were asked to enter your NitroKey PIN. After entry, it
+allows SSH access!
 
 ## Dependencies
 nitrotool itself only depends on Python3, but assumes you've installed PC/SC,
