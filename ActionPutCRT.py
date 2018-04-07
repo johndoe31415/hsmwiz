@@ -19,14 +19,13 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import sys
+import subprocess
 from BaseAction import BaseAction
 from NitroKey import NitroKey
 
-class ActionRemoveKey(BaseAction):
+class ActionPutCRT(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		if all(argument is None for argument in [ self.args.label, self.args.id ]):
-			print("Error: Must specify either a label or key ID to remove from smartcard.", file = sys.stderr)
-			sys.exit(1)
+		crt_derdata = subprocess.check_output([ "openssl", "x509", "-outform", "der", "-in", self.args.crt_pemfile ])
 		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.removekey(key_id = self.args.id, key_label = self.args.label)
+		nitrokey.putcrt(crt_derdata = crt_derdata, cert_id = self.args.id, cert_label = self.args.label)

@@ -209,3 +209,18 @@ class NitroKey(object):
 
 	def gencrt(self, key_id, subject = "/CN=NitroKey Example", validity_days = 365, hashfnc = "sha256"):
 		return self._gencsr_crt(key_id = key_id, subject = subject, validity_days = validity_days, hashfnc = hashfnc)
+
+	def putcrt(self, crt_derdata, cert_id, cert_label = None):
+		with tempfile.NamedTemporaryFile("wb", prefix = "crt_", suffix= ".der") as crt_tempfile:
+			crt_tempfile.write(crt_derdata)
+			crt_tempfile.flush()
+
+			cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
+			if self.__pin is not None:
+				cmd += [ "--pin", self.__pin ]
+			if cert_id is not None:
+				cmd += [ "--id", str(cert_id) ]
+			if cert_label is not None:
+				cmd += [ "--label", cert_label ]
+			cmd += [ "--write-object", crt_tempfile.name, "--type", "cert" ]
+			self._call(cmd)

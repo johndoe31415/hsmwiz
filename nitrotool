@@ -31,6 +31,7 @@ from ActionKeyGen import ActionKeyGen
 from ActionGetPublicKey import ActionGetPublicKey
 from ActionRemoveKey import ActionRemoveKey
 from ActionGenCSR import ActionGenCSR
+from ActionPutCRT import ActionPutCRT
 
 _default = {
 	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/openssl-1.0.2/engines",
@@ -111,5 +112,14 @@ def genparser(parser):
 	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
 mc.register("gencrt", "Generate a self-signed certificate from a HSM-contained private key", genparser, action = ActionGenCSR)
+
+def genparser(parser):
+	parser.add_argument("-i", "--id", metavar = "cert_id", type = int, default = 1, help = "Specifies the cert ID under which the certificate will be stored on the smartcard. Defaults to %(default)d.")
+	parser.add_argument("--label", metavar = "cert_label", type = str, help = "Specifies the certificate's label.")
+	parser.add_argument("--pin", metavar = "pin", type = str, help = "Specifies the PIN of the smartcard. If this argument is not given, the command will ask for it interactively.")
+	parser.add_argument("--so-path", metavar = "path", type = str, default = _default["sopath"], help = "Search path, separated by ':' characters, in which to look for shared objects like opensc-pkcs11.so. Defaults to %(default)s")
+	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
+	parser.add_argument("crt_pemfile", metavar = "crt_pemfile", type = str, help = "Certificate to put on the smartcart, in PEM format.")
+mc.register("putcrt", "Put a certificate on the smartcard", genparser, action = ActionPutCRT)
 
 mc.run(sys.argv[1:])
