@@ -15,6 +15,13 @@ The hardware I'm working with is the [NitroKey HSM](https://shop.nitrokey.com),
 which is a quite affordable smart-card based USB HSM. I'm in no way affiliated
 with them whatsoever, just think they have a pretty cool product.
 
+## CA management and PKI
+Once you've a good grip on keys that are working on your NitroKey, you might
+want to use it to create a CA and issue certificates signed by that CA (which
+has its key on a hardware token such as the NitroKey HSM). Lucky you, check out
+the [x509sak (X.509 Swiss Army Knife)](https://github.com/johndoe31415/x509sak),
+the sibling project of nitrotool, which has that exact capability.
+
 ## Usage
 All commands have comprehensive help pages. You can get a summary of available
 commands by typing:
