@@ -36,7 +36,7 @@ from ActionGenCSR import ActionGenCSR
 from ActionPutCRT import ActionPutCRT
 
 _default = {
-	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/openssl-1.0.2/engines",
+	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/openssl-1.0.2/engines:/usr/lib/x86_64-linux-gnu/engines-1.1",
 }
 
 mc = MultiCommand()
