@@ -112,7 +112,7 @@ class NitroKey(object):
 		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
 		if self.__pin is not None:
 			cmd += [ "--pin", self.__pin ]
-		cmd += [ "--keypairgen", "--key-type", key_spec, "--id", str(key_id) ]
+		cmd += [ "--keypairgen", "--key-type", key_spec, "--id", "%x" % (key_id) ]
 		if key_label is not None:
 			cmd += [ "--label", key_label ]
 		self._call(cmd)
@@ -144,7 +144,7 @@ class NitroKey(object):
 			if self.__pin is not None:
 				cmd += [ "--pin", self.__pin ]
 			if key_id is not None:
-				cmd += [ "--id", str(key_id) ]
+				cmd += [ "--id", "%x" % (key_id) ]
 			if key_label is not None:
 				cmd += [ "--label", key_label ]
 			cmd += [ "--read-object", "--type", "pubkey" ]
@@ -163,7 +163,7 @@ class NitroKey(object):
 		if self.__pin is not None:
 			cmd += [ "--pin", self.__pin ]
 		if key_id is not None:
-			cmd += [ "--id", str(key_id) ]
+			cmd += [ "--id", "%x" % (key_id) ]
 		if key_label is not None:
 			cmd += [ "--label", key_label ]
 		cmd += [ "--delete-object", "--type", "privkey" ]
@@ -240,7 +240,7 @@ class NitroKey(object):
 			if self.__pin is not None:
 				cmd += [ "--pin", self.__pin ]
 			if cert_id is not None:
-				cmd += [ "--id", str(cert_id) ]
+				cmd += [ "--id", "%x" % (cert_id) ]
 			if cert_label is not None:
 				cmd += [ "--label", cert_label ]
 			cmd += [ "--write-object", crt_tempfile.name, "--type", "cert" ]
