@@ -101,7 +101,7 @@ class NitroKey(object):
 		self._call(cmd)
 
 	def explore(self):
-		if self._verbose:
+		if self.__verbose:
 			print("Verify PIN   : verify chv129")
 			print("Change PIN   : change chv129 \"648219\" \"123456\"")
 			print("Change SO-PIN: change chv136 \"3537363231383830\" \"16b72e4528d5063e\"")
