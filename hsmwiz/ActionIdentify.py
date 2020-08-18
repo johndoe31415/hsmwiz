@@ -1,4 +1,4 @@
-#	hsmwiz - Frontend for NitroKey USB HSM
+#	hsmwiz - Simplified handling of Hardware Security Modules
 #	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of hsmwiz.
