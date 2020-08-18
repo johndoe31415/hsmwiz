@@ -207,9 +207,28 @@ pQD+3QcftVe9CZJu0uW25MEcg3S/yKOG
 ```
 
 ## Example: Setting up a NitroKey HSM for SSH authentication
-Generate an RSA key. Unfortunately, currently [OpenSSH still does not support
-ECDSA with PKCS#11](https://bugzilla.mindrot.org/show_bug.cgi?id=2474). This is
-done simply by doing:
+Generate a key. For OpenSSH before v8.0, [this has to be an RSA
+key](https://bugzilla.mindrot.org/show_bug.cgi?id=2474). You can create an
+ECDSA/secp256r1 key by using:
+
+```
+$ hsmwiz genkey --id 2 --label my-ec-ssh-key --pin 648219 EC:prime256v1
+Using slot 0 with a present token (0x0)
+Key pair generated:
+Private Key Object; EC
+  label:      sshkey
+  ID:         02
+  Usage:      sign, derive
+Public Key Object; EC  EC_POINT 256 bits
+  EC_POINT:   044104ae19243bc5847e589392ffd6e4a463fd64826db96664b7d61a26c22eb523808bb4e8a31018be80f7aa1353c1f082a1a0c52ae4678129aad91f7908e62ad3081d
+  EC_PARAMS:  06082a8648ce3d030107
+  label:      sshkey
+  ID:         02
+  Usage:      verify, derive
+```
+
+Alternatively (e.g., if your OpenSSH version doesn't permit ECDSA/PKCS#11),
+create an RSA keypair inside the HSM:
 
 ```
 $ hsmwiz genkey --id 1 --label my-ssh-key --pin 648219 rsa:2048
@@ -225,7 +244,16 @@ Public Key Object; RSA 2048 bits
   Usage:      encrypt, verify, wrap
 ```
 
-Then, extract the public key you just created from the NitroKey in SSH format:
+After you have created a key, you can easily extract the public key you just
+created from the NitroKey in SSH format. For the ECC case, this is done by:
+
+```
+$ hsmwiz getkey --id 2 --key-format ssh --pin 648219
+Using slot 0 with a present token (0x0)
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK4ZJDvFhH5Yk5L/1uSkY/1kgm25ZmS31homwi61I4CLtOijEBi+gPeqE1PB8IKhoMUq5GeBKarZH3kI5irTCB0=
+```
+
+Or in the case of the RSA example:
 
 ```
 $ hsmwiz getkey --id 1 --key-format ssh --pin 648219
@@ -233,10 +261,10 @@ Using slot 0 with a present token (0x0)
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCV6Fqr80gKq+wV+MA0dMltHTuwMwyVLBvLPdtVYdsw4S2YAjfTDnLATFHOhId/fFDMbSv9qH3YI/F8ryXM8MY53J1bd3Vd5iPbnG8/Azk0F5IUw9u/bhL6/39nFWJqSKww68pe4BFtCHMfPLchT9A6lMk0QOe8rU8VNkgcZsMfQ+iDzd5OmEC7JdlJSY7kCSPHkF/SoJLk5BuftV3kVCm2VAhkMgObbNnw3xHoiL0yv/JZyBly+ssDog72EkNvbYL9bvVMk2ZqYhLESPTwMnh7x1DyznlIC2R3XuqKkrQ5ztMblCAli5S7s1yYSKj4jCYzyIZf2nfPoCTTiqNs7Eyd
 ```
 
-Add that last line to the `~/.ssh/authorized_keys` file on the user/host you
-want to authenticate with (i.e., the one with the OpenSSH server).
+Add the public key line to the `~/.ssh/authorized_keys` file on the user/host
+you want to authenticate with (i.e., the one with the OpenSSH server).
 
-When you want to login to that server, do:
+When you want to login to that server using the HSM, do:
 
 ```
 $ ssh -o "PKCS11Provider opensc-pkcs11.so" joe@reliant
