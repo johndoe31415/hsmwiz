@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 #	MultiCommand - Provide an openssl-style multi-command abstraction
-#	Copyright (C) 2011-2019 Johannes Bauer
+#	Copyright (C) 2011-2020 Johannes Bauer
 #
 #	This file is part of pycommon.
 #
@@ -34,10 +34,11 @@ class MultiCommand():
 	RegisteredCommand = collections.namedtuple("RegisteredCommand", [ "name", "description", "parsergenerator", "action", "aliases", "visible" ])
 	ParseResult = collections.namedtuple("ParseResults", [ "cmd", "args" ])
 
-	def __init__(self):
+	def __init__(self, trailing_text = None):
 		self._commands = { }
 		self._aliases = { }
 		self._cmdorder = [ ]
+		self._trailing_text = trailing_text
 
 	def register(self, commandname, description, parsergenerator, **kwargs):
 		supported_kwargs = set(("aliases", "action", "visible"))
@@ -73,6 +74,10 @@ class MultiCommand():
 				print("    %-15s    %s" % (commandname_line, description_line))
 				commandname_line = ""
 		print(file = sys.stderr)
+		if self._trailing_text is not None:
+			for line in textwrap.wrap(self._trailing_text, width = 80):
+				print(line, file = sys.stderr)
+			print(file = sys.stderr)
 		print("Options vary from command to command. To receive further info, type", file = sys.stderr)
 		print("    %s [command] --help" % (sys.argv[0]), file = sys.stderr)
 

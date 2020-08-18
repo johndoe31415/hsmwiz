@@ -20,6 +20,7 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import sys
+import hsmwiz
 from .MultiCommand import MultiCommand
 from .ActionIdentify import ActionIdentify
 from .ActionVerifyPIN import ActionVerifyPIN
@@ -40,7 +41,7 @@ _default = {
 	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/openssl-1.0.2/engines:/usr/lib/x86_64-linux-gnu/engines-1.1",
 }
 
-mc = MultiCommand()
+mc = MultiCommand(trailing_text = "version: hsmwiz v%s" % (hsmwiz.VERSION))
 def genparser(parser):
 	parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be specified multiple times.")
 mc.register("identify", "Check if a HSM is connected and list all contents", genparser, action = ActionIdentify)
