@@ -18,4 +18,4 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-VERSION = "0.0.1"
+VERSION = "0.0.2-dev"
