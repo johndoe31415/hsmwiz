@@ -1,5 +1,5 @@
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -19,14 +19,11 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import sys
-from BaseAction import BaseAction
-from NitroKey import NitroKey
+from .BaseAction import BaseAction
+from .NitroKey import NitroKey
 
-class ActionRemoveKey(BaseAction):
+class ActionFormat(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		if all(argument is None for argument in [ self.args.label, self.args.id ]):
-			print("Error: Must specify either a label or key ID to remove from smartcard.", file = sys.stderr)
-			sys.exit(1)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.removekey(key_id = self.args.id, key_label = self.args.label)
+		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, sopin = self.args.so_pin)
+		nitrokey.format()

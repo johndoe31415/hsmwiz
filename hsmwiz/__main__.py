@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -20,21 +20,21 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import sys
-from MultiCommand import MultiCommand
-from ActionIdentify import ActionIdentify
-from ActionVerifyPIN import ActionVerifyPIN
-from ActionCheckEngine import ActionCheckEngine
-from ActionInit import ActionInit
-from ActionFormat import ActionFormat
-from ActionChangePIN import ActionChangePIN
-from ActionExplore import ActionExplore
-from ActionUnblock import ActionUnblock
-from ActionKeyGen import ActionKeyGen
-from ActionGetPublicKey import ActionGetPublicKey
-from ActionRemoveKey import ActionRemoveKey
-from ActionGenCSR import ActionGenCSR
-from ActionPutCRT import ActionPutCRT
-from FriendlyArgumentParser import baseint
+from .MultiCommand import MultiCommand
+from .ActionIdentify import ActionIdentify
+from .ActionVerifyPIN import ActionVerifyPIN
+from .ActionCheckEngine import ActionCheckEngine
+from .ActionInit import ActionInit
+from .ActionFormat import ActionFormat
+from .ActionChangePIN import ActionChangePIN
+from .ActionExplore import ActionExplore
+from .ActionUnblock import ActionUnblock
+from .ActionKeyGen import ActionKeyGen
+from .ActionGetPublicKey import ActionGetPublicKey
+from .ActionRemoveKey import ActionRemoveKey
+from .ActionGenCSR import ActionGenCSR
+from .ActionPutCRT import ActionPutCRT
+from .FriendlyArgumentParser import baseint
 
 _default = {
 	"sopath":	"/usr/local/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/openssl-1.0.2/engines:/usr/lib/x86_64-linux-gnu/engines-1.1",

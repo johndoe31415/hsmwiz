@@ -1,5 +1,5 @@
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -21,7 +21,7 @@
 import os
 import subprocess
 import tempfile
-from CmdTools import CmdTools
+from .CmdTools import CmdTools
 
 class NitroKey(object):
 	_INITIAL_SOPIN = "3537363231383830"

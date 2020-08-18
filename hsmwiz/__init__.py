@@ -1,5 +1,5 @@
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -17,13 +17,3 @@
 #	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
-
-class CmdTools(object):
-	@classmethod
-	def cmdline(cls, cmd):
-		def escape(text):
-			if (" " in text) or ("\"" in text):
-				return "\"%s\"" % (text.replace("\"", "\\\""))
-			else:
-				return text
-		return " ".join(escape(arg) for arg in cmd)

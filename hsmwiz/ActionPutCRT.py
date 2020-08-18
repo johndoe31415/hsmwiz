@@ -1,5 +1,5 @@
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -20,8 +20,8 @@
 
 import sys
 import subprocess
-from BaseAction import BaseAction
-from NitroKey import NitroKey
+from .BaseAction import BaseAction
+from .NitroKey import NitroKey
 
 class ActionPutCRT(BaseAction):
 	def __init__(self, cmdname, args):

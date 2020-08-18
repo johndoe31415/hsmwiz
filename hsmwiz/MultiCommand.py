@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 #	MultiCommand - Provide an openssl-style multi-command abstraction
-#	Copyright (C) 2011-2018 Johannes Bauer
+#	Copyright (C) 2011-2020 Johannes Bauer
 #
 #	This file is part of jpycommon.
 #
@@ -27,8 +27,8 @@ import sys
 import collections
 import textwrap
 
-from FriendlyArgumentParser import FriendlyArgumentParser
-from PrefixMatcher import PrefixMatcher
+from .FriendlyArgumentParser import FriendlyArgumentParser
+from .PrefixMatcher import PrefixMatcher
 
 class MultiCommand(object):
 	RegisteredCommand = collections.namedtuple("RegisteredCommand", [ "name", "description", "parsergenerator", "action", "aliases", "visible" ])

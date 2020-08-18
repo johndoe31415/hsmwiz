@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 #	PrefixMatcher - Match the shortest unambiguous prefix
-#	Copyright (C) 2011-2012 Johannes Bauer
+#	Copyright (C) 2011-2020 Johannes Bauer
 #
 #	This file is part of jpycommon.
 #
@@ -23,7 +23,7 @@
 #
 #	File UUID f75ad3fb-12d0-4368-b14b-9353df125800
 
-class PrefixMatcher(object):
+class PrefixMatcher():
 	def __init__(self, options):
 		self._opts = options
 

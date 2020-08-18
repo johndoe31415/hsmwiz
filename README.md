@@ -1,14 +1,16 @@
-# nitrotool
-Nitrotool is a frontend for [OpenSC](https://github.com/OpenSC/OpenSC) to ease
-handling of the NitroKey HSM USB smart card. It might work with other smart
-cards as well, I'm not certain. Basically, it is just boilerplate that does
-nothing more than what is already described in the [excellent OpenSC
-tutorial](https://github.com/OpenSC/OpenSC/wiki/SmartCardHSM) for the Smart
-Card HSM. However, there's some annoying issues with that -- multiple tools are
-needed (pkcs11-tool, pkcs15-tool, sc-hsm-tool, OpenSSL) and output formats are
-sometimes not very user friendly (e.g., public keys are exported as binary DER
-blobs instead of PEM files). So I wrote this little frontend to encapsulate
-common tasks a bit.
+# hsmwiz
+HSMWiz is a frontend for [OpenSC](https://github.com/OpenSC/OpenSC) to ease
+handling of HSMs like the NitroKey HSM USB smart card. It was previously called
+"nitrotool" since it only targeted the NitroKey, but has since been renamed
+because it actually is not using anything specific to the NitroKey. 
+
+Basically, it is just boilerplate that does nothing more than what is already
+described in the [excellent OpenSC tutorial](https://github.com/OpenSC/OpenSC/wiki/SmartCardHSM)
+for the Smart Card HSM. However, there's some annoying issues with that --
+multiple tools are needed (pkcs11-tool, pkcs15-tool, sc-hsm-tool, OpenSSL) and
+output formats are sometimes not very user friendly (e.g., public keys are
+exported as binary DER blobs instead of PEM files). So I wrote this little
+frontend to encapsulate common tasks a bit.
 
 ## Hardware
 The hardware I'm working with is the [NitroKey HSM](https://shop.nitrokey.com),
@@ -16,19 +18,19 @@ which is a quite affordable smart-card based USB HSM. I'm in no way affiliated
 with them whatsoever, just think they have a pretty cool product.
 
 ## CA management and PKI
-Once you've a good grip on keys that are working on your NitroKey, you might
-want to use it to create a CA and issue certificates signed by that CA (which
-has its key on a hardware token such as the NitroKey HSM). Lucky you, check out
-the [x509sak (X.509 Swiss Army Knife)](https://github.com/johndoe31415/x509sak),
-the sibling project of nitrotool, which has that exact capability.
+Once you've a good grip on keys that are working on your HSM, you might want to
+use it to create a CA and issue certificates signed by that CA (which has its
+key on a hardware token such as the NitroKey HSM). Lucky you, check out the
+[x509sak (X.509 Swiss Army Knife)](https://github.com/johndoe31415/x509sak),
+the sibling project of hsmwiz, which has that exact capability.
 
 ## Usage
 All commands have comprehensive help pages. You can get a summary of available
 commands by typing:
 
 ```
-$ ./nitrotool
-Syntax: ./nitrotool [command] [options]
+$ ./hsmwiz
+Syntax: ./hsmwiz [command] [options]
 
 Available commands:
     identify           Check if a NitroKey is connected and list all contents
@@ -52,14 +54,14 @@ Available commands:
     putcrt             Put a certificate on the smartcard
 
 Options vary from command to command. To receive further info, type
-    ./nitrotool [command] --help
+    ./hsmwiz [command] --help
 ```
 
 Then, you can lookup individual help pages:
 
 ```
-$ ./nitrotool keygen --help
-usage: ./nitrotool keygen [--id key_id] [--label key_label] [--pin pin]
+$ ./hsmwiz keygen --help
+usage: ./hsmwiz keygen [--id key_id] [--label key_label] [--pin pin]
                           [--so-path path] [-v] [--help]
                           keyspec
 
@@ -88,7 +90,7 @@ optional arguments:
 You can first query a transponder:
 
 ```
-$ ./nitrotool identify
+$ ./hsmwiz identify
 Using reader with a card: Nitrokey Nitrokey HSM (010000000000000000000000) 00 00
 Version              : 2.6
 Config options       :
@@ -132,7 +134,7 @@ PIN [SOPIN]
 Then, you could use it to generate a new private key:
 
 ```
-$ ./nitrotool genkey EC:prime256v1 --label fookey
+$ ./hsmwiz genkey EC:prime256v1 --label fookey
 Using slot 0 with a present token (0x0)
 Logging in to "UserPIN (SmartCard-HSM)".
 Please enter User PIN:
@@ -152,7 +154,7 @@ Public Key Object; EC  EC_POINT 256 bits
 Check if that worked by identifying again:
 
 ```
-$ ./nitrotool id
+$ ./hsmwiz id
 [...]
 Private EC Key [fookey]
 	Object Flags   : [0x3], private, modifiable
@@ -179,7 +181,7 @@ Public EC Key [fookey]
 Grab the public key:
 
 ```
-$ ./nitrotool getpubkey --label fookey
+$ ./hsmwiz getpubkey --label fookey
 Using slot 0 with a present token (0x0)
 Logging in to "UserPIN (SmartCard-HSM)".
 Please enter User PIN:
@@ -193,7 +195,7 @@ HhpqZX8rK4SVuSB9QINq4/J2tVqJiThfRvFgBmd5ObWAtmY2CG3D8JWk4g==
 Or create a CSR from a HSM key:
 
 ```
-$ ./nitrotool gencsr --pin 648219
+$ ./hsmwiz gencsr --pin 648219
 engine "pkcs11" set.
 -----BEGIN CERTIFICATE REQUEST-----
 MIHVMH0CAQAwGzEZMBcGA1UEAwwQTml0cm9LZXkgRXhhbXBsZTBZMBMGByqGSM49
@@ -210,7 +212,7 @@ ECDSA with PKCS#11](https://bugzilla.mindrot.org/show_bug.cgi?id=2474). This is
 done simply by doing:
 
 ```
-$ ./nitrotool genkey --id 1 --label my-ssh-key --pin 648219 rsa:2048
+$ ./hsmwiz genkey --id 1 --label my-ssh-key --pin 648219 rsa:2048
 Using slot 0 with a present token (0x0)
 Key pair generated:
 Private Key Object; RSA
@@ -226,7 +228,7 @@ Public Key Object; RSA 2048 bits
 Then, extract the public key you just created from the NitroKey in SSH format:
 
 ```
-$ ./nitrotool getkey --id 1 --key-format ssh --pin 648219
+$ ./hsmwiz getkey --id 1 --key-format ssh --pin 648219
 Using slot 0 with a present token (0x0)
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCV6Fqr80gKq+wV+MA0dMltHTuwMwyVLBvLPdtVYdsw4S2YAjfTDnLATFHOhId/fFDMbSv9qH3YI/F8ryXM8MY53J1bd3Vd5iPbnG8/Azk0F5IUw9u/bhL6/39nFWJqSKww68pe4BFtCHMfPLchT9A6lMk0QOe8rU8VNkgcZsMfQ+iDzd5OmEC7JdlJSY7kCSPHkF/SoJLk5BuftV3kVCm2VAhkMgObbNnw3xHoiL0yv/JZyBly+ssDog72EkNvbYL9bvVMk2ZqYhLESPTwMnh7x1DyznlIC2R3XuqKkrQ5ztMblCAli5S7s1yYSKj4jCYzyIZf2nfPoCTTiqNs7Eyd
 ```
@@ -248,7 +250,7 @@ You'll notice that you were asked to enter your NitroKey PIN. After entry, it
 allows SSH access!
 
 ## Dependencies
-nitrotool itself only depends on Python3, but assumes you've installed PC/SC,
+hsmwiz itself only depends on Python3, but assumes you've installed PC/SC,
 OpenSC and OpenSSL. It'll use those tools on the command line.
 
 ## License

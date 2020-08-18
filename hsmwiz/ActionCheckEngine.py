@@ -1,5 +1,5 @@
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -19,10 +19,11 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import sys
-from BaseAction import BaseAction
-from NitroKey import NitroKey
+from .BaseAction import BaseAction
+from .NitroKey import NitroKey
 
-class ActionExplore(BaseAction):
+class ActionCheckEngine(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0)).explore()
+		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path)
+		nitrokey.check_engine()

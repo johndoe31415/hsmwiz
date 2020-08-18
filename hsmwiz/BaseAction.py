@@ -1,5 +1,5 @@
 #	nitrotool - Frontend for NitroKey USB HSM
-#	Copyright (C) 2018-2018 Johannes Bauer
+#	Copyright (C) 2018-2020 Johannes Bauer
 #
 #	This file is part of nitrotool.
 #
@@ -18,23 +18,11 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-import sys
-from BaseAction import BaseAction
-from NitroKey import NitroKey
-
-class ActionVerifyPIN(BaseAction):
+class BaseAction():
 	def __init__(self, cmdname, args):
-		BaseAction.__init__(self, cmdname, args)
+		self._cmdname = cmdname
+		self._args = args
 
-		if not args.verify_sopin:
-			nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-			if nitrokey.login():
-				print("PIN correct.", file = sys.stderr)
-			else:
-				print("PIN was WRONG!", file = sys.stderr)
-		else:
-			nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, sopin = self.args.pin)
-			if nitrokey.login(with_sopin = True):
-				print("SO-PIN correct.", file = sys.stderr)
-			else:
-				print("SO-PIN was WRONG!", file = sys.stderr)
+	@property
+	def args(self):
+		return self._args
