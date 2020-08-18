@@ -21,7 +21,7 @@
 import os
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionChangePIN(BaseAction):
 	@staticmethod
@@ -58,8 +58,8 @@ class ActionChangePIN(BaseAction):
 		else:
 			new_value = self.args.new
 
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = pin, sopin = sopin)
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = pin, sopin = sopin)
 		if self.args.affect_so_pin:
-			nitrokey.change_sopin(new_value)
+			hsm.change_sopin(new_value)
 		else:
-			nitrokey.change_pin(new_value)
+			hsm.change_pin(new_value)

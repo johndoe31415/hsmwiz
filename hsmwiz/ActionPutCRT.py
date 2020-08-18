@@ -21,11 +21,11 @@
 import sys
 import subprocess
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionPutCRT(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
 		crt_derdata = subprocess.check_output([ "openssl", "x509", "-outform", "der", "-in", self.args.crt_pemfile ])
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.putcrt(crt_derdata = crt_derdata, cert_id = self.args.id, cert_label = self.args.label)
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
+		hsm.putcrt(crt_derdata = crt_derdata, cert_id = self.args.id, cert_label = self.args.label)

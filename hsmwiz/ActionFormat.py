@@ -20,10 +20,10 @@
 
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionFormat(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, sopin = self.args.so_pin)
-		nitrokey.format()
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, sopin = self.args.so_pin)
+		hsm.format()

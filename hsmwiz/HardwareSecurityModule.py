@@ -23,7 +23,7 @@ import subprocess
 import tempfile
 from .CmdTools import CmdTools
 
-class NitroKey(object):
+class HardwareSecurityModule(object):
 	_INITIAL_SOPIN = "3537363231383830"
 	_INITIAL_PIN = "648219"
 
@@ -225,10 +225,10 @@ class NitroKey(object):
 			with open(temp_csr_crt.name) as f:
 				print(f.read().rstrip("\r\n"))
 
-	def gencsr(self, key_id, subject = "/CN=NitroKey Example"):
+	def gencsr(self, key_id, subject = "/CN=HardwareSecurityModule Example"):
 		return self._gencsr_crt(key_id = key_id, subject = subject)
 
-	def gencrt(self, key_id, subject = "/CN=NitroKey Example", validity_days = 365, hashfnc = "sha256"):
+	def gencrt(self, key_id, subject = "/CN=HardwareSecurityModule Example", validity_days = 365, hashfnc = "sha256"):
 		return self._gencsr_crt(key_id = key_id, subject = subject, validity_days = validity_days, hashfnc = hashfnc)
 
 	def putcrt(self, crt_derdata, cert_id, cert_label = None):

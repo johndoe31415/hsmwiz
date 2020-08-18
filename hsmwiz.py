@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #	hsmwiz - Simplified handling of Hardware Security Modules
 #	Copyright (C) 2018-2020 Johannes Bauer
 #
@@ -18,15 +19,4 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-import sys
-from .BaseAction import BaseAction
-from .HardwareSecurityModule import HardwareSecurityModule
-
-class ActionGenCSR(BaseAction):
-	def __init__(self, cmdname, args):
-		BaseAction.__init__(self, cmdname, args)
-		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		if cmdname == "gencsr":
-			hsm.gencsr(key_id = self.args.id, subject = self.args.subject)
-		else:
-			hsm.gencrt(key_id = self.args.id, subject = self.args.subject, validity_days = self.args.validity_days, hashfnc = self.args.hashfnc)
+import hsmwiz.__main__

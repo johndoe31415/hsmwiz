@@ -20,10 +20,10 @@
 
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionKeyGen(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.keygen(key_spec = self.args.keyspec, key_id = self.args.id, key_label = self.args.label)
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
+		hsm.keygen(key_spec = self.args.keyspec, key_id = self.args.id, key_label = self.args.label)

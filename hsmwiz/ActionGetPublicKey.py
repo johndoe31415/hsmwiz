@@ -20,7 +20,7 @@
 
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionGetPublicKey(BaseAction):
 	def __init__(self, cmdname, args):
@@ -28,5 +28,5 @@ class ActionGetPublicKey(BaseAction):
 		if all(argument is None for argument in [ self.args.label, self.args.id ]):
 			print("Error: Must specify either a label or key ID to fetch from smartcard.", file = sys.stderr)
 			sys.exit(1)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
-		nitrokey.getpubkey(key_id = self.args.id, key_label = self.args.label, key_format = self.args.key_format)
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = self.args.pin)
+		hsm.getpubkey(key_id = self.args.id, key_label = self.args.label, key_format = self.args.key_format)

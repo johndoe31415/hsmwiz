@@ -20,9 +20,9 @@
 
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionIdentify(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		nitrokey = NitroKey(verbose = True).list()
+		hsm = HardwareSecurityModule(verbose = True).list()

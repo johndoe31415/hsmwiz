@@ -20,10 +20,10 @@
 
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionCheckEngine(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0), so_path = self.args.so_path)
-		nitrokey.check_engine()
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path)
+		hsm.check_engine()

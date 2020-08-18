@@ -20,13 +20,13 @@
 
 import sys
 from .BaseAction import BaseAction
-from .NitroKey import NitroKey
+from .HardwareSecurityModule import HardwareSecurityModule
 
 class ActionInit(BaseAction):
 	def __init__(self, cmdname, args):
 		BaseAction.__init__(self, cmdname, args)
-		nitrokey = NitroKey(verbose = (self.args.verbose > 0))
-		if nitrokey.initialized:
-			print("Error: Cannot initialize NitroKey -- already initialized.", file = sys.stderr)
+		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0))
+		if hsm.initialized:
+			print("Error: Cannot initialize HardwareSecurityModule -- already initialized.", file = sys.stderr)
 			sys.exit(1)
 
