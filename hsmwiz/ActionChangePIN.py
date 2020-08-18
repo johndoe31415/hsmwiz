@@ -20,6 +20,7 @@
 
 import os
 import sys
+import getpass
 from .BaseAction import BaseAction
 from .HardwareSecurityModule import HardwareSecurityModule
 
@@ -56,7 +57,10 @@ class ActionChangePIN(BaseAction):
 				new_value = self._gen_int_pin(6)
 				print("New PIN: %s" % (new_value))
 		else:
-			new_value = self.args.new
+			if self.args.new is not None:
+				new_value = self.args.new
+			else:
+				new_value = getpass.getpass("New PIN: ")
 
 		hsm = HardwareSecurityModule(verbose = (self.args.verbose > 0), so_path = self.args.so_path, pin = pin, sopin = sopin)
 		if self.args.affect_so_pin:

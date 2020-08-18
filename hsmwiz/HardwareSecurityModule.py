@@ -101,7 +101,7 @@ class HardwareSecurityModule(object):
 		self._call(cmd)
 
 	def explore(self):
-		if self._verbose:
+		if self.__verbose:
 			print("Verify PIN   : verify chv129")
 			print("Change PIN   : change chv129 \"648219\" \"123456\"")
 			print("Change SO-PIN: change chv136 \"3537363231383830\" \"16b72e4528d5063e\"")
@@ -247,16 +247,15 @@ class HardwareSecurityModule(object):
 			self._call(cmd)
 
 	def change_pin(self, new_value):
+		assert(new_value is not None)
 		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
-#		, "--login-type", "so" ]
-#		if self.__sopin is not None:
-#			cmd += [ "--so-pin", self.__sopin ]
 		if self.__pin is not None:
 			cmd += [ "--pin", self.__pin ]
 		cmd += [ "--change-pin", "--new-pin", str(new_value) ]
 		self._call(cmd)
 
 	def change_sopin(self, new_value):
+		assert(new_value is not None)
 		cmd = [ "pkcs11-tool", "--module", self._shared_obj("opensc-pkcs11.so"), "--login" ]
 		cmd += [ "--login-type", "so" ]
 		if self.__sopin is not None:
