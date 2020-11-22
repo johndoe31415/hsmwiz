@@ -19,4 +19,6 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-import hsmwiz.__main__
+import sys
+from hsmwiz.__main__ import main
+sys.exit(main())
