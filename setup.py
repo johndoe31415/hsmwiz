@@ -6,7 +6,7 @@ with open("README.md") as f:
 setuptools.setup(
 	name = "hsmwiz",
 	packages = setuptools.find_packages(),
-	version = "0.0.2",
+	version = "0.0.3",
 	license = "gpl-3.0",
 	description = "Frontend for OpenSC, pkcs11tool and pkcs15tool to ease handling of HSM smartcards",
 	long_description = long_description,
@@ -14,7 +14,7 @@ setuptools.setup(
 	author = "Johannes Bauer",
 	author_email = "joe@johannes-bauer.com",
 	url = "https://github.com/johndoe31415/hsmwiz",
-	download_url = "https://github.com/johndoe31415/hsmwiz/archive/0.0.2.tar.gz",
+	download_url = "https://github.com/johndoe31415/hsmwiz/archive/0.0.3.tar.gz",
 	keywords = [ "hsm", "pcsc", "smart", "card", "frontend", "openssl" ],
 	entry_points = {
 		"console_scripts": [
